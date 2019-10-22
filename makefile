@@ -1,5 +1,5 @@
-name=mongo-dk1
-image=mongo
+name=mongo-sg1
+image=docker://mongo
 singularity_image_dir=${HOME}/singularity/images
 host_dir=$(shell pwd)
 vol1=${host_dir}/volume
@@ -12,16 +12,19 @@ pd1=27017
 
 pull:
 	cd ${singularity_image_dir} && \
-	singularity pull --name mongo.sif docker://mongo
+	singularity pull --name mongo.sif ${image} 
 
-run:
-	singularity run --bind ${vol1}:${mnt1} --bind ${vol2}:${mnt2} ${singularity_image_dir}/mongo.sif --auth
+start:
+	singularity instance start --bind ${vol1}:${mnt1} ${singularity_image_dir}/mongo.sif ${name}
+
+# run:
+# 	singularity run --bind ${vol1}:${mnt1} --bind ${vol2}:${mnt2} ${singularity_image_dir}/mongo.sif --auth
 
 stop:
-	singularity instance stop mongo
+	singularity instance stop ${name}
 
 mongo:
-	 singularity exec --bind ${vol1}:${mnt1} --bind ${vol2}:${mnt2} ${singularity_image_dir}/mongo.img mongo
+	 singularity exec --bind ${vol1}:${mnt1} ${singularity_image_dir}/mongo.img mongo
 
 commit:
 	git add .
