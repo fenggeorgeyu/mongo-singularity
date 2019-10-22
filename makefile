@@ -25,7 +25,7 @@ mongo:
 
 commit:
 	git add .
-	git commit -am "auto commit by "${USER}
+	git commit -am "auto commit by "$(shell whoami)
 	git pull
 	git merge -m 'auto merge'
 	git push
