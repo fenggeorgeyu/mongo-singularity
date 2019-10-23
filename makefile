@@ -1,7 +1,7 @@
 name=mongo-sg1
-image=docker://mongo
-singularity_image_dir=${HOME}/singularity/images
+image=library://ibug/default/mongo
 host_dir=$(shell pwd)
+singularity_image_dir=${HOME}/singularity/images
 vol1=${host_dir}/volume
 mnt1=/data/db
 vol2=${host_dir}/shared
@@ -15,16 +15,13 @@ pull:
 	singularity pull --name mongo.sif ${image} 
 
 start:
-	singularity instance start --bind ${vol1}:${mnt1} ${singularity_image_dir}/mongo.sif ${name}
-
-# run:
-# 	singularity run --bind ${vol1}:${mnt1} --bind ${vol2}:${mnt2} ${singularity_image_dir}/mongo.sif --auth
+	singularity instance start --bind ${vol1}:${mnt1} --bind ${vol2}:${mnt2} ${singularity_image_dir}/mongo.sif ${name}
 
 stop:
 	singularity instance stop ${name}
 
 mongo:
-	 singularity exec --bind ${vol1}:${mnt1} ${singularity_image_dir}/mongo.img mongo
+	 singularity exec --bind ${vol1}:${mnt1} ${singularity_image_dir}/mongo.sif mongo --host localhost
 
 commit:
 	git add .
@@ -32,6 +29,13 @@ commit:
 	git pull
 	git merge -m 'auto merge'
 	git push
+
+clean-cache:
+	singularity cache clean
+
+# run:
+# 	singularity run --bind ${vol1}:${mnt1} --bind ${vol2}:${mnt2} ${singularity_image_dir}/mongo.sif 
+
 
 # create:
 # 	docker run -d -it --name ${name} \
